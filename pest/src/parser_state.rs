@@ -8,13 +8,14 @@
 // modified, or distributed except according to those terms.
 
 use std::ops::Range;
-use std::rc::Rc;
 
 use error::{Error, ErrorVariant};
 use iterators::{pairs, QueueableToken};
 use position::{self, Position};
 use span::Span;
 use stack::Stack;
+
+use super::RefCounted;
 use RuleType;
 
 /// The current lookahead status of a [`ParserState`].
@@ -80,7 +81,7 @@ where
     match f(state) {
         Ok(state) => {
             let len = state.queue.len();
-            Ok(pairs::new(Rc::new(state.queue), input, 0, len))
+            Ok(pairs::new(RefCounted::new(state.queue), input, 0, len))
         }
         Err(mut state) => {
             state.pos_attempts.sort();

@@ -10,12 +10,12 @@
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::ptr;
-use std::rc::Rc;
 use std::str;
 
 #[cfg(feature = "pretty-print")]
 use serde::ser::SerializeStruct;
 
+use crate::RefCounted;
 use super::pairs::{self, Pairs};
 use super::queueable_token::QueueableToken;
 use super::tokens::{self, Tokens};
@@ -35,7 +35,7 @@ pub struct Pair<'i, R> {
     /// # Safety
     ///
     /// All `QueueableToken`s' `input_pos` must be valid character boundary indices into `input`.
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &'i str,
     /// Token index into `queue`.
     start: usize,
@@ -45,7 +45,7 @@ pub struct Pair<'i, R> {
 ///
 /// All `QueueableToken`s' `input_pos` must be valid character boundary indices into `input`.
 pub unsafe fn new<R: RuleType>(
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &str,
     start: usize,
 ) -> Pair<R> {
@@ -300,7 +300,7 @@ impl<'i, R: RuleType> fmt::Display for Pair<'i, R> {
 
 impl<'i, R: PartialEq> PartialEq for Pair<'i, R> {
     fn eq(&self, other: &Pair<'i, R>) -> bool {
-        Rc::ptr_eq(&self.queue, &other.queue)
+        RefCounted::ptr_eq(&self.queue, &other.queue)
             && ptr::eq(self.input, other.input)
             && self.start == other.start
     }

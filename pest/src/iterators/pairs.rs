@@ -10,12 +10,12 @@
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::ptr;
-use std::rc::Rc;
 use std::str;
 
 #[cfg(feature = "pretty-print")]
 use serde::ser::SerializeStruct;
 
+use crate::RefCounted;
 use super::flat_pairs::{self, FlatPairs};
 use super::pair::{self, Pair};
 use super::queueable_token::QueueableToken;
@@ -29,14 +29,14 @@ use RuleType;
 /// [`Pair::into_inner`]: struct.Pair.html#method.into_inner
 #[derive(Clone)]
 pub struct Pairs<'i, R> {
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &'i str,
     start: usize,
     end: usize,
 }
 
 pub fn new<R: RuleType>(
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &str,
     start: usize,
     end: usize,
@@ -178,7 +178,7 @@ impl<'i, R: RuleType> Pairs<'i, R> {
     #[inline]
     pub fn peek(&self) -> Option<Pair<'i, R>> {
         if self.start < self.end {
-            Some(unsafe { pair::new(Rc::clone(&self.queue), self.input, self.start) })
+            Some(unsafe { pair::new(RefCounted::clone(&self.queue), self.input, self.start) })
         } else {
             None
         }
@@ -236,7 +236,7 @@ impl<'i, R: RuleType> DoubleEndedIterator for Pairs<'i, R> {
 
         self.end = self.pair_from_end();
 
-        let pair = unsafe { pair::new(Rc::clone(&self.queue), self.input, self.end) };
+        let pair = unsafe { pair::new(RefCounted::clone(&self.queue), self.input, self.end) };
 
         Some(pair)
     }
@@ -263,7 +263,7 @@ impl<'i, R: RuleType> fmt::Display for Pairs<'i, R> {
 
 impl<'i, R: PartialEq> PartialEq for Pairs<'i, R> {
     fn eq(&self, other: &Pairs<'i, R>) -> bool {
-        Rc::ptr_eq(&self.queue, &other.queue)
+        RefCounted::ptr_eq(&self.queue, &other.queue)
             && ptr::eq(self.input, other.input)
             && self.start == other.start
             && self.end == other.end

@@ -93,6 +93,11 @@ mod token;
 #[doc(hidden)]
 pub mod unicode;
 
+#[cfg(not(feature = "sync-send"))]
+pub(crate) type RefCounted<T> = std::rc::Rc<T>;
+#[cfg(feature = "sync-send")]
+pub(crate) type RefCounted<T> = std::sync::Arc<T>;
+
 /// A trait which parser rules must implement.
 ///
 /// This trait is set up so that any struct that implements all of its required traits will

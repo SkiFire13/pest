@@ -16,6 +16,8 @@ readme = "_README.md"
 pretty-print = ["serde", "serde_json"]
 # Enable const fn constructor for `PrecClimber` (requires nightly)
 const_prec_climber = []
+# Swaps the use of `Rc` with `Arc` to make `Pair` and `Pairs` both `Sync` and `Send`
+sync-send = []
 
 [dependencies]
 ucd-trie = "0.1.1"

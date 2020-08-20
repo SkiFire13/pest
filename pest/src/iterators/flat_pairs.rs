@@ -8,8 +8,8 @@
 // modified, or distributed except according to those terms.
 
 use std::fmt;
-use std::rc::Rc;
 
+use crate::RefCounted;
 use super::pair::{self, Pair};
 use super::queueable_token::QueueableToken;
 use super::tokens::{self, Tokens};
@@ -23,7 +23,7 @@ pub struct FlatPairs<'i, R> {
     /// # Safety
     ///
     /// All `QueueableToken`s' `input_pos` must be valid character boundary indices into `input`.
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &'i str,
     start: usize,
     end: usize,
@@ -33,7 +33,7 @@ pub struct FlatPairs<'i, R> {
 ///
 /// All `QueueableToken`s' `input_pos` must be valid character boundary indices into `input`.
 pub unsafe fn new<R: RuleType>(
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &str,
     start: usize,
     end: usize,
@@ -106,7 +106,7 @@ impl<'i, R: RuleType> Iterator for FlatPairs<'i, R> {
             return None;
         }
 
-        let pair = unsafe { pair::new(Rc::clone(&self.queue), self.input, self.start) };
+        let pair = unsafe { pair::new(RefCounted::clone(&self.queue), self.input, self.start) };
 
         self.next_start();
 
@@ -122,7 +122,7 @@ impl<'i, R: RuleType> DoubleEndedIterator for FlatPairs<'i, R> {
 
         self.next_start_from_end();
 
-        let pair = unsafe { pair::new(Rc::clone(&self.queue), self.input, self.end) };
+        let pair = unsafe { pair::new(RefCounted::clone(&self.queue), self.input, self.end) };
 
         Some(pair)
     }
@@ -139,7 +139,7 @@ impl<'i, R: RuleType> fmt::Debug for FlatPairs<'i, R> {
 impl<'i, R: Clone> Clone for FlatPairs<'i, R> {
     fn clone(&self) -> FlatPairs<'i, R> {
         FlatPairs {
-            queue: Rc::clone(&self.queue),
+            queue: RefCounted::clone(&self.queue),
             input: self.input,
             start: self.start,
             end: self.end,

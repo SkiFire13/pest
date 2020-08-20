@@ -8,9 +8,9 @@
 // modified, or distributed except according to those terms.
 
 use std::fmt;
-use std::rc::Rc;
 use std::str;
 
+use crate::RefCounted;
 use super::queueable_token::QueueableToken;
 use position;
 use token::Token;
@@ -26,7 +26,7 @@ pub struct Tokens<'i, R> {
     /// # Safety:
     ///
     /// All `QueueableToken`s' `input_pos` must be valid character boundary indices into `input`.
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &'i str,
     start: usize,
     end: usize,
@@ -34,7 +34,7 @@ pub struct Tokens<'i, R> {
 
 // TODO(safety): QueueableTokens must be valid indices into input.
 pub fn new<R: RuleType>(
-    queue: Rc<Vec<QueueableToken<R>>>,
+    queue: RefCounted<Vec<QueueableToken<R>>>,
     input: &str,
     start: usize,
     end: usize,
