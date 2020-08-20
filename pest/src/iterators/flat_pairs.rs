@@ -52,7 +52,7 @@ impl<'i, R: RuleType> FlatPairs<'i, R> {
     /// # Examples
     ///
     /// ```
-    /// # use std::rc::Rc;
+    /// # //use std::rc::Rc;
     /// # use pest;
     /// # #[allow(non_camel_case_types)]
     /// # #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

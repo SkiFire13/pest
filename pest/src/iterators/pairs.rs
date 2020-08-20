@@ -57,7 +57,6 @@ impl<'i, R: RuleType> Pairs<'i, R> {
     /// # Examples
     ///
     /// ```
-    /// # use std::rc::Rc;
     /// # use pest;
     /// # #[allow(non_camel_case_types)]
     /// # #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -93,7 +92,6 @@ impl<'i, R: RuleType> Pairs<'i, R> {
     /// # Examples
     ///
     /// ```
-    /// # use std::rc::Rc;
     /// # use pest;
     /// # #[allow(non_camel_case_types)]
     /// # #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -122,7 +120,6 @@ impl<'i, R: RuleType> Pairs<'i, R> {
     /// # Examples
     ///
     /// ```
-    /// # use std::rc::Rc;
     /// # use pest;
     /// # #[allow(non_camel_case_types)]
     /// # #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -152,7 +149,6 @@ impl<'i, R: RuleType> Pairs<'i, R> {
     /// # Examples
     ///
     /// ```
-    /// # use std::rc::Rc;
     /// # use pest;
     /// # #[allow(non_camel_case_types)]
     /// # #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
