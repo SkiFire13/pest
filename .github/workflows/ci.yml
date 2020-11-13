@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - github-actions
+      - staging
+      - trying
+      - master
+  pull_request:
+      branches:
+        - "**"
+
+jobs:
+  stable:
+    name: Test on stable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            $HOME/.cargo
+            $GITHUB_WORKSPACE/target
+          key: stable
+      - name: Install latest rust stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Run cargo bootstrap
+        run: cargo bootstrap
+      - name: Run cargo build
+        run: cargo build --all --verbose
+      - name: Run cargo test
+        run: cargo test --all --verbose
+      - name: Run cargo doc
+        run: cargo doc --all --verbose
+  style:
+    name: Check style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            $HOME/.cargo
+            $GITHUB_WORKSPACE/target
+          key: style
+      - name: Install latest rust 1.47.0 toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.47.0 # Pinned warnings
+          override: true
+          components: rustfmt, clippy
+      - name: Run cargo bootstrap
+        run: cargo bootstrap
+      - name: Check clippy lints
+        run: cargo clippy --all -- -D warnings
+      - name: Check rustfmt
+        run: cargo fmt --all -- --check
+  minimal_versions:
+    name: Test with minimal dependencies versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            $HOME/.cargo
+            $GITHUB_WORKSPACE/target
+          key: minimal
+      - name: Install latest rust nightly-2020-01-01 toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-01-01 # Arbitrary nightly for unstable cargo feature -- make this MSRV build later?
+          override: true
+      - name: Generate lockfile
+        run: cargo -Z minimal-versions generate-lockfile
+      - name: Run cargo bootstrap
+        run: cargo bootstrap
+      - name: Run cargo test
+        run: cargo test --all --verbose
